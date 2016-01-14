@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="spiderbot.MotionPage">
+	<StackLayout BackgroundColor="#EBEBF1">
+
+		<StackLayout Padding="5" HorizontalOptions="FillAndExpand">
+			<Image x:Name="spiderImage" Source="spider.png" HorizontalOptions="FillAndExpand"/>
+		</StackLayout>
+		<StackLayout Spacing="5" Padding="10">
+			<Button x:Name="goForwardButton"  Style="{StaticResource buttonStyle}" Text="Forward"  />
+			<Button x:Name="goBackButton" Style="{StaticResource buttonStyle}" Text="Back"  />
+			<Button x:Name="stopButton" Style="{StaticResource buttonStyle}" Text="Stop"  />
+		</StackLayout>
+
+		<StackLayout Padding="10" Orientation="Horizontal" HorizontalOptions="Fill" >
+			<Label Text="Left" />
+			<Slider x:Name="slider" HorizontalOptions="FillAndExpand" />
+			<Label Text="Right" />
+		</StackLayout>
+
+		<WebView x:Name="webView" IsVisible="false" Source="http://192.168.1.1/"/>
+
+	</StackLayout>
+</ContentPage>

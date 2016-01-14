@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Application
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="spiderbot.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <Style x:Key="headerStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="24" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <Style x:Key="buttonStyle" TargetType="Button">
+                <Setter Property="FontSize" Value="22" />
+                <Setter Property="BorderRadius" Value="24" />
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="BackgroundColor" Value="#4AAEED" />
+            </Style>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

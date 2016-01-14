@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="spiderbot.ColorPage">
+
+	<Grid BackgroundColor="#EBEBF1">
+
+		<Grid.RowDefinitions>
+	      <RowDefinition Height="4*" />
+	      <RowDefinition Height="1*" />
+	      <RowDefinition Height="1*" />
+	      <RowDefinition Height="1*" />
+	      <RowDefinition Height="1*" />
+	    </Grid.RowDefinitions>
+		<BoxView Grid.Row="0" x:Name="ColorBox" Color="#000000" />
+
+		<StackLayout Padding="10" Grid.Row="1" Orientation="Horizontal" HorizontalOptions="Fill" >
+			<Slider x:Name="redSlider" HorizontalOptions="FillAndExpand" />
+			<Label Text="Red" />
+		</StackLayout>
+
+		<StackLayout Padding="10" Grid.Row="2" Orientation="Horizontal" HorizontalOptions="Fill" >
+			<Slider x:Name="blueSlider" HorizontalOptions="FillAndExpand" />
+			<Label Text="Blue" />
+		</StackLayout>
+
+		<StackLayout Padding="10" Grid.Row="3" Orientation="Horizontal" HorizontalOptions="Fill" >
+			<Slider x:Name="greenSlider" HorizontalOptions="FillAndExpand" />
+			<Label Text="Green" />
+		</StackLayout>
+
+		<StackLayout Padding="10" Grid.Row="4">
+			<Button x:Name="SaveButton"  Style="{StaticResource buttonStyle}" Text="Save Changes"  />
+		</StackLayout>
+		<WebView x:Name="webView" IsVisible="false" Source="http://192.168.1.1/"/>
+	</Grid>
+</ContentPage>
