@@ -136,7 +136,7 @@ namespace spiderbot
 			}
 		}
 
-		public async Task StopAnimationSpider(){
+		public void StopAnimationSpider(){
 			animating = false;
 		}
 
