@@ -5,6 +5,7 @@ using Xamarin.Forms;
 using System.Threading.Tasks;
 using System.Net;
 using System.IO;
+using System.Diagnostics;
 
 namespace spiderbot
 {
@@ -15,28 +16,33 @@ namespace spiderbot
 		}
 
 		enum DirectionalMotionState{
+			LEFT,RIGHT,STRAIGHT
+		}
+
+		enum RotationalMotionState{
 			LEFT,RIGHT,NONE
 		}
 
 		ScalarMotionState currentScalarState;
 		DirectionalMotionState currentDirectionState;
+		RotationalMotionState currentRotationalState;
 
-		void GoForward ()
+		void GoForwardScalar ()
 		{
-			var instance = RobotService.Instance;
-			instance.host = "ws://127.0.0.1";
-			instance.GoForward ();
-
-			if (currentScalarState == ScalarMotionState.BACK) {
+			if (currentScalarState == ScalarMotionState.FORWARD) {
+				return;
+			}else if (currentScalarState == ScalarMotionState.BACK) {
 				StopMoving ();
 			}
 			webView.Eval ("wsSendCommand ('command',  'walkY 120');");
 			currentScalarState = ScalarMotionState.FORWARD;
 		}
 
-		void GoBack ()
+		void GoBackScalar ()
 		{
-			if (currentScalarState == ScalarMotionState.FORWARD) {
+			if (currentScalarState == ScalarMotionState.BACK) {
+				return;
+			}else if (currentScalarState == ScalarMotionState.FORWARD) {
 				StopMoving ();
 			}
 			webView.Eval ("wsSendCommand('command',  'walkY 80');");
@@ -51,29 +57,72 @@ namespace spiderbot
 			currentScalarState = ScalarMotionState.STOPPED;
 		}
 
-		void StopTurn ()
+		void StopTranslation ()
 		{
-			if (currentDirectionState != DirectionalMotionState.NONE){
-				webView.Eval ("wsSendCommand ('command',  'walkTurnZ 100');");
+			if (currentDirectionState != DirectionalMotionState.STRAIGHT){
+				webView.Eval ("wsSendCommand ('command',  'walkX 100');");
+
 			}
-			currentDirectionState = DirectionalMotionState.NONE;
+			currentDirectionState = DirectionalMotionState.STRAIGHT;
 		}
 
-		void TurnLeft ()
+		void StopRotation(){
+			if (currentRotationalState != RotationalMotionState.NONE){
+				webView.Eval ("wsSendCommand ('command',  'walkTurnZ 100');");
+			}
+			currentRotationalState = RotationalMotionState.NONE;
+		}
+
+
+		void RotateLeft ()
 		{
-			if (currentDirectionState == DirectionalMotionState.RIGHT) {
-				StopTurn ();
+			if (currentRotationalState == RotationalMotionState.LEFT) {
+				return;
+			}
+			if (currentRotationalState == RotationalMotionState.RIGHT) {
+				StopRotation ();
 			}
 			webView.Eval("wsSendCommand ('command',  'walkTurnZ 130');");
+
+			currentRotationalState = RotationalMotionState.LEFT;
+		}
+
+		void RotateRight ()
+		{
+			if (currentRotationalState == RotationalMotionState.RIGHT) {
+				return;
+			}
+
+			if (currentRotationalState == RotationalMotionState.LEFT) {
+				StopRotation ();
+			}
+			webView.Eval ("wsSendCommand ('command',  'walkTurnZ 70');");
+			currentRotationalState = RotationalMotionState.RIGHT;
+		}
+
+		void TranslateLeft ()
+		{
+			if (currentDirectionState == DirectionalMotionState.LEFT) {
+				return;
+			}
+			if (currentDirectionState == DirectionalMotionState.RIGHT) {
+				StopTranslation ();
+			}
+			webView.Eval ("wsSendCommand ('command',  'walkX 70');");
+
 			currentDirectionState = DirectionalMotionState.LEFT;
 		}
 
-		void TurnRight ()
+		void TranslateRight ()
 		{
-			if (currentDirectionState == DirectionalMotionState.LEFT) {
-				StopTurn ();
+			if (currentDirectionState == DirectionalMotionState.RIGHT) {
+				return;
 			}
-			webView.Eval ("wsSendCommand ('command',  'walkTurnZ 70');");
+
+			if (currentDirectionState == DirectionalMotionState.LEFT) {
+				StopTranslation ();
+			}
+			webView.Eval ("wsSendCommand ('command',  'walkX 130');");
 			currentDirectionState = DirectionalMotionState.RIGHT;
 		}
 
@@ -97,25 +146,57 @@ namespace spiderbot
 			InitializeComponent ();
 
 			var defaultColor = goForwardButton.BackgroundColor;
-			slider.Maximum = 130;
-			slider.Minimum = 70;
-			slider.Value = 100;
-			slider.ValueChanged += (sender, e) => {
+			rotationSlider.Maximum = 130;
+			rotationSlider.Minimum = 70;
+			rotationSlider.Value = 100;
+			rotationSlider.ValueChanged += (sender, e) => {
 				if (e.NewValue > 80 && e.NewValue < 110){
-					StopTurn();
+					StopTranslation();
 				}else if (e.NewValue < 100){
-					TurnLeft();
+					TranslateLeft();
 				}else{
-					TurnRight();
+					TranslateRight();
 				}
 			};
 				
-			currentDirectionState = DirectionalMotionState.NONE;
+			currentDirectionState = DirectionalMotionState.STRAIGHT;
 			currentScalarState = ScalarMotionState.STOPPED;
+
+			joyStickTranslation.OnValueChanged += (float xPos, float yPos) => {
+
+				Debug.WriteLine("" + xPos + ", " + yPos);
+				if (xPos > 0.5){
+					TranslateRight();
+				}else if (xPos < -0.5){
+					TranslateLeft();
+				}else{
+					StopTranslation();
+				}
+
+				if (yPos > 0.5){
+					GoBackScalar();
+				}else if (yPos < -0.5){
+					GoForwardScalar();
+				}else{
+					StopMoving();
+				}
+					
+			};
+
+			joyStickRotation.OnValueChanged += (float xPos, float yPos) => {
+				if (xPos > 0.5){
+					RotateRight();
+				}else if (xPos < -0.5){
+					RotateLeft();
+				}else{
+					StopRotation();
+				}
+			};
 
 			stopButton.Clicked += async (object sender, EventArgs e) => {
 				StopMoving();
-				StopTurn();
+				StopTranslation();
+				StopRotation();
 				await stopButton.AnimateButton();
 				goForwardButton.BackgroundColor = defaultColor;
 				goBackButton.BackgroundColor = defaultColor;
@@ -125,7 +206,7 @@ namespace spiderbot
 
 			goForwardButton.Clicked += async (object sender, EventArgs e) => {
 
-				GoForward();
+				GoForwardScalar();
 				await goForwardButton.AnimateButton();
 				goForwardButton.BackgroundColor = Color.Red;
 				goBackButton.BackgroundColor = defaultColor;
@@ -137,7 +218,7 @@ namespace spiderbot
 			};
 
 			goBackButton.Clicked += async (object sender, EventArgs e) => {
-				GoBack();
+				GoBackScalar();
 				await goBackButton.AnimateButton();
 				goForwardButton.BackgroundColor = defaultColor;
 				goBackButton.BackgroundColor = Color.Red;

@@ -8,8 +8,8 @@ namespace spiderbot
 	public partial class ColorPage : ContentPage
 	{
 
-		const double minColorValue = 0;
-		const double maxColorValue = 255.0;
+		const int minColorValue = 0;
+		const int maxColorValue = 255;
 
 		public ColorPage ()
 		{
@@ -21,16 +21,19 @@ namespace spiderbot
 			redSlider.ValueChanged += (object sender, ValueChangedEventArgs e) => {
 				var currentColor = ColorBox.Color;
 				ColorBox.Color = new Color(e.NewValue/maxColorValue, currentColor.G, currentColor.B);
+				ChangeColor();
 			};
 
 			blueSlider.ValueChanged += (object sender, ValueChangedEventArgs e) => {
 				var currentColor = ColorBox.Color;
 				ColorBox.Color = new Color(currentColor.R, currentColor.G, e.NewValue/maxColorValue);
+				ChangeColor();
 			};
 
 			greenSlider.ValueChanged += (object sender, ValueChangedEventArgs e) => {
 				var currentColor = ColorBox.Color;
-				ColorBox.Color = new Color(currentColor.R, e.NewValue/maxColorValue, currentColor.B);			
+				ColorBox.Color = new Color(currentColor.R, e.NewValue/maxColorValue, currentColor.B);	
+				ChangeColor();
 			};
 
 			greenSlider.Value = 123;
@@ -38,11 +41,24 @@ namespace spiderbot
 			blueSlider.Value = 123;
 
 			SaveButton.Clicked += async (sender, e) => {
-				webView.Eval(String.Format("wsSendCommand ('command', 'changeLEDColor {0} {1} {2}');", redSlider.Value, greenSlider.Value, blueSlider.Value));
-				webView.Eval(String.Format("wsSendCommand ('command', 'saveCurrentLEDColor {0} {1} {2}');", redSlider.Value, greenSlider.Value, blueSlider.Value));
-
+				SaveColor();
 				await SaveButton.AnimateButton();
 			};
+		}
+
+		public void ChangeColor(){
+			webView.Eval(String.Format("wsSendCommand ('command', 'changeLEDColor {0} {1} {2} 20');", 
+				redSlider.Value/maxColorValue * 100, 
+				greenSlider.Value/maxColorValue * 100, 
+				blueSlider.Value/maxColorValue * 100));
+		}
+
+		public void SaveColor(){
+			ChangeColor ();
+			webView.Eval(String.Format("wsSendCommand ('command', 'saveCurrentLEDColor {0} {1} {2}');", 
+				redSlider.Value/maxColorValue * 100, 
+				greenSlider.Value/maxColorValue * 100, 
+				blueSlider.Value/maxColorValue * 100));
 		}
 	}
 }

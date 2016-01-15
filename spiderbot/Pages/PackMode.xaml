@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="spiderbot.PackMode">
-	<StackLayout Padding="10">
+	<StackLayout BackgroundColor="#EBEBF1" >
+		<StackLayout Padding="10">
 			<Label Text="When the robot is ready to be put back in the box, please press the button below. Don't forget to turn off power!" />
 			<Button x:Name="packingButton"  Style="{StaticResource buttonStyle}" Text="Position for Packing"  />
+		</StackLayout>
 	</StackLayout>
 </ContentPage>

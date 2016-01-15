@@ -27,6 +27,7 @@ namespace spiderbot
 		public async Task connect(){
 			client = new WebSocketClient ();
 
+
 			client.Opened += () => {
 				Debug.WriteLine("Connected to Robot");
 			};
