@@ -122,7 +122,11 @@ namespace spiderbot.iOS
 
 		void UpdateThumb()
 		{
-			thumb.Center = new CGPoint(Element.ThumbCenter.X, Element.ThumbCenter.Y);
+			var frame = thumb.Frame;
+			var xOffset = float.IsNaN(Element.xPosition) ? 0 : Element.xPosition * frame.Width/2;
+			var yOffset = float.IsNaN(Element.yPosition) ? 0 : Element.yPosition * frame.Height/2;
+
+			thumb.Center = new CGPoint(Element.ThumbCenter.X - xOffset, Element.ThumbCenter.Y + yOffset);
 		}
 
 		protected override void Dispose(bool disposing)
